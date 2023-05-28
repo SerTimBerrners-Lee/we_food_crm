@@ -1,7 +1,6 @@
 <template>
-	<add-user />
 
-  <a-table :columns="columns" :data-source="getUsers" @change="onChange">
+  <a-table :columns="columns" :data-source="getBids" @change="onChange">
 		
     <template #headerCell="{ column }">
 			<template v-if="column.key === 'id'">
@@ -9,40 +8,27 @@
           ID
         </span>
       </template>
-      <template v-if="column.key === 'name'">
-        <span>
-          Имя и Фамилия
-        </span>
-      </template>
     </template>
 
     <template #bodyCell="{ column, record }">
-      <template v-if="column.key === 'name'">
-        <a>
-          {{ record.name }} {{ record.surname }}
-        </a>
+      <template v-if="column.key === 'status'">
+        <a-tag :color="'green'">{{ record.status }}</a-tag>
       </template>
 
-      <template v-else-if="column.key === 'role'">
+      <template v-else-if="column.key === 'last_call'">
         <span>
-          <a-tag
-            :color="record.role == 'user' ? 'green' : 'geekblue'"
-          >
-            {{ record.role.toUpperCase() }}
-          </a-tag>
+          {{ record.last_call }}
         </span>
       </template>
 
-      <template v-else-if="column.key === 'address'">
+			<template v-else-if="column.key === 'description'">
         <span>
-          {{ record.address }}
+          {{ record.description }}
         </span>
       </template>
 
       <template v-else-if="column.key === 'action'">
         <span>
-          <edit-user :user_id="record.id" />
-          <a-divider type="vertical" />
 
           <a>Заказы</a>
           <a-divider type="vertical" />
@@ -65,8 +51,6 @@
 import { defineComponent } from 'vue';
 import { message } from 'ant-design-vue';
 import { mapGetters, useStore } from 'vuex';
-import AddUser from '@/components/Users/AddUser';
-import EditUser from '@/components/Users/EditUser';
 
 const columns = [
 	{
@@ -75,26 +59,24 @@ const columns = [
 		key: 'id',
 	},
 	{
-		name: 'Имя и Фамилия',
-		dataIndex: 'name',
-		key: 'name',
-	}, {
-		title: 'Адресс',
-		dataIndex: 'address',
-		key: 'address',
-	}, {
 		title: 'Телефон',
 		key: 'phone',
 		dataIndex: 'phone',
 	},
 	{
-		title: 'Роль',
-		key: 'role',
-		dataIndex: 'role',
-		sorter: {
-			compare: (a, b) => a.chinese - b.chinese,
-			multiple: 3,
-		},
+		title: 'Статус',
+		key: 'status',
+		dataIndex: 'status',
+	},
+	{
+		title: 'Последний звонок',
+		key: 'last_call',
+		dataIndex: 'last_call',
+	},
+	{
+		title: 'Описание',
+		key: 'description',
+		dataIndex: 'description',
 	},
 	{
 		title: 'Действие',
@@ -103,21 +85,19 @@ const columns = [
 
 export default defineComponent({
   components: {
-    AddUser,
-    EditUser
   },
-  computed: mapGetters(['getUsers']),
+  computed: mapGetters(['getBids']),
   setup() {
     const store = useStore();
 
-    store.dispatch('getNotConfirmedUsers', { page: 1, limit: 25 }).then(res => {
+    store.dispatch('getAllBids', { page: 1, limit: 25 }).then(res => {
       if (!res.success)
         message.error(res?.error || "Произошла ошибка при получении данных");
     });
 
 		const confirm = async (user_id) => {
       if (!user_id) return message.warn("Не правильно переданы параметры для удаления пользователя");
-      const result = await store.dispatch("deleteUser", user_id);
+      const result = await store.dispatch("deleteUser", 0);
       if (result.success) 
         return message.success('Пользователь удален');
       

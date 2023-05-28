@@ -1,4 +1,3 @@
-
 export const toLocaleDatePicter = function(value) {
 	let date = null;
 	if (value._i && typeof value._i === 'object')
@@ -18,5 +17,6 @@ export const getDaysDiff = (dateStr1, dateStr2 = new Date().toLocaleDateString('
   const date1 = new Date(year1, month1 - 1, day1);
   const date2 = new Date(year2, month2 - 1, day2);
   const timeDiff = date2.getTime() - date1.getTime();
+
   return Math.round(timeDiff / (1000 * 60 * 60 * 24));
 }

@@ -76,6 +76,15 @@
             <a-input v-model:value="form.email" placeholder="Почта" />
           </a-form-item>
         </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="Статус" name="status">
+            <a-select v-model:value="form.status">
+              <a-select-option value="confirmed">Подтвержден</a-select-option>
+              <a-select-option value="not_confirmed">Не подтвержден</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
       </a-row>
 
       <a-row :gutter="16">
@@ -131,7 +140,8 @@ export default defineComponent({
       phone: '',
       birthday: null,
       description: '',
-      email: ''
+      email: '',
+      status: 'not_confirmed'
     });
     const rules = {
       name: [{

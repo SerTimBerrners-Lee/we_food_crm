@@ -59,12 +59,22 @@
       </a-row>
 
       <a-row :gutter="16">
-				<i>*Скидка вносится форматом день/день/%скидки: Например 3/5/1 = c 3 по 5 день скидка = 1%</i>
-				<i>*Чтобы выбрать любое число можно написать так: 30/0/11. Эта запись будет означать от 30 и до любого числа</i>
-        <a-col :span="4">
+				<a-col :span="12">
+         <a-form-item label="Другие рассходы" name="other_expenses">
+            <a-input type="number" v-model:value="form.other_expenses" />
+          </a-form-item>
+        </a-col>
+      </a-row>
+
+      <a-row>
+				<i>*Скидка вносится форматом с_дня/по_день/стоимость_за_блюдо: Например 3/5/750 = c 3 по 5 день стоимость 750</i>
+				<i>*Чтобы выбрать любое число можно написать так: 30/0/750. Эта запись будет означать от 30 и до любого числа</i>
+        <a-col :span="24">
           <a-form-item label="Скидки">
-						<div v-for="(item, index) of state.precent_range_discont || []" :key="index">
-							#{{ index+1 }}<input :value="item" :placeholder='`3/5/1`' @input="e => formatMask(e, index)" />
+						<div v-for="(item, index) of state.precent_range_discont || []" :key="index" class="discount_item">
+							#{{ index+1 }}
+              <input :value="item.discount" :placeholder='`3/5/1`' @input="e => formatMask(e, index)" />
+              <input v-model="item.description" placeholder="Текст отображаемый у пользователя"/>
 						</div>
           </a-form-item>
         </a-col>
@@ -130,7 +140,8 @@ export default defineComponent({
       price_one_dishes: 0,
       precent_range_discont: '',
 			status: 'Не актуально',
-			description: ''
+			description: '',
+      other_expenses: 1000,
     });
 
     const rules = {
@@ -158,6 +169,7 @@ export default defineComponent({
 			form.price_one_dishes = data.price_one_dishes;
 			state.precent_range_discont = data.precent_range_discont ? JSON.parse(data.precent_range_discont) : [];
 			form.status = data.status;
+      form.other_expenses = data.other_expenses;
 			state.id = data.id;
 
       visible.value = true;
@@ -199,11 +211,9 @@ export default defineComponent({
 
 		const formatMask = (e, inx) => {
 			const val = e.target?.value;
-			let value = val.replace(/[^0-9/]/g, '');
-			const parts = value.split('/');
-			value = parts.join('/');
+			const value = val;
 
-			state.precent_range_discont[inx] = value;
+			state.precent_range_discont[inx].discount = value;
 
 			if (!val) {
 				state.precent_range_discont = state.precent_range_discont.filter((el, index) => 
@@ -212,7 +222,7 @@ export default defineComponent({
 			}
 		}
 
-		const addDiscont = () => state.precent_range_discont.push('0/0/0');
+		const addDiscont = () => state.precent_range_discont.push({discount: '0/0/0', description: '' });
 
     return {
       form,
@@ -233,3 +243,21 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.discount_item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+}
+.discount_item>input {
+  margin-left: 5px;
+}
+.discount_item>input:first-child {
+  width: 80px;
+}
+.discount_item>input:last-child {
+  width: 500px;
+}
+</style>

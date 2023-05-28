@@ -10,6 +10,7 @@ import OrderArchive from '@/page/Order/OrderArchive';
 import DishesPage from '@/page/Kitchen/Dishes/DishesPage';
 import KitchenPage from '@/page/Kitchen/KitchenPage';
 import DeliveryPage from '@/page/Delivery/DeliveryPage';
+import BidsPage from '@/page/Bids/BidsPage';
 
 const routes = [
 	{
@@ -70,6 +71,11 @@ const routes = [
 		path: '/delivery',
 		name: 'Доставка: Актуальные заказы',
 		component: DeliveryPage
+	},
+	{
+		path: '/bids',
+		name: 'Заявки',
+		component: BidsPage
 	}
 ];
 

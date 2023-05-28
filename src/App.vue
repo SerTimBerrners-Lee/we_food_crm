@@ -17,7 +17,7 @@
 
         <a-menu-item key="2">
           <phone-outlined />
-          <span class="nav-text">Заявки</span>
+          <span class="nav-text" @click="$router.push('/bids')">Заявки</span>
         </a-menu-item>
 
         <a-sub-menu key="sub1">

@@ -18,8 +18,8 @@
 			</p>
 			<p>
 				<strong>Скидки:</strong>
-				<a-tag v-for="discont of parseDiscontList(pl.precent_range_discont)" :key="discont">
-					{{discont}}
+				<a-tag v-for="item of parseDiscontList(pl.precent_range_discont)" :key="item">
+					{{item.discount}}
 				</a-tag>
 			</p>
 

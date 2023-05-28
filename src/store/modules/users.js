@@ -48,6 +48,16 @@ export default {
 
 			return res;
 		},
+		async getNotConfirmedUsers(ctx, { page = 1, limit = 25 }) {
+			const res = await Req(`user/get_all_not_confirmed/${page}/${limit}`, {
+				method: 'GET'
+			});
+
+			if (res.success && res.data)
+				ctx.commit("get_all_user", res.data);
+
+			return res;
+		},
 		async getOneUser(ctx, user_id) {
 			const res = await Req(`user/get_one/${user_id}`, {
 				method: 'GET'
@@ -72,6 +82,13 @@ export default {
 
 			if (res.success && res.data)
 				ctx.commit("delete_user", user_id);
+
+			return res;
+		},
+		async fetchResetPassword(ctx, user_id) {
+			const res = await Req(`user/reset-password/${user_id}`, {
+				method: "PUT"
+			});
 
 			return res;
 		}

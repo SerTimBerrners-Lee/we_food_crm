@@ -59,6 +59,14 @@
       </a-row>
 
       <a-row :gutter="16">
+				<a-col :span="12">
+         <a-form-item label="Другие рассходы" name="other_expenses">
+            <a-input type="number" v-model:value="form.other_expenses" />
+          </a-form-item>
+        </a-col>
+      </a-row>
+
+      <a-row :gutter="16">
 				<i>*Скидка вносится форматом день/день/%скидки: Например 3/5/1 = c 3 по 5 день скидка = 1%</i>
 				<i>*Чтобы выбрать любое число можно написать так: 30/0/11. Эта запись будет означать от 30 и до любого числа</i>
         <a-col :span="4">
@@ -126,7 +134,8 @@ export default defineComponent({
       price_one_dishes: 0,
       precent_range_discont: '',
 			status: 'Не актуально',
-			description: ''
+			description: '',
+      other_expenses: 1000,
     });
 
     const rules = {

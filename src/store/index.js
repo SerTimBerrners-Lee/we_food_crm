@@ -6,6 +6,7 @@ import orders from './modules/orders';
 import dishes from './modules/dishes';
 import stages from './modules/stages';
 import kitchen from './modules/kitchen';
+import bid from './modules/bid';
 
 export default createStore({
 	modules: {
@@ -15,6 +16,7 @@ export default createStore({
 		orders,
 		dishes,
 		stages,
+		bid,
 		kitchen
 	}
 });

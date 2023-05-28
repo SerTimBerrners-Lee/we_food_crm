@@ -74,6 +74,15 @@
             <a-input v-model:value="form.email" placeholder="Почта" />
           </a-form-item>
         </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="Статус" name="status">
+            <a-select v-model:value="form.status">
+              <a-select-option value="confirmed">Подтвержден</a-select-option>
+              <a-select-option value="not_confirmed">Не подтвержден</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
       </a-row>
 
       <a-row :gutter="16">
@@ -86,6 +95,7 @@
             />
           </a-form-item>
         </a-col>
+        <a style="color: red; margin: 10px;" v-if="authUser && authUser?.role === 'Администратор'" @click="resetPassword">Сбросить пароль</a>
       </a-row>
 
      <a-form-item>
@@ -102,8 +112,8 @@
 <script>
 
 import moment from 'moment';
-import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
+import { useStore, mapGetters } from 'vuex';
 import LoaderSpin from '@/components/LoaderSpin';
 import { defineComponent, reactive, ref } from 'vue';
 import { toLocaleDatePicter } from '@/js/date.methods';
@@ -116,6 +126,7 @@ export default defineComponent({
   components: {
     LoaderSpin
   },
+  computed: mapGetters(['authUser']),
   setup(props) {
     const store = useStore();
 
@@ -132,7 +143,8 @@ export default defineComponent({
       phone: '',
       birthday: null,
       description: '',
-      email: ''
+      email: '',
+      status: 'confirmed',
     });
     const rules = {
       name: [{
@@ -186,6 +198,7 @@ export default defineComponent({
       form.birthday = ref(moment(data.birthday, dateFormat));
       form.description = data.description;
       form.email = data.email;
+      form.status = data.status;
       state.id = data.id;
 
       visible.value = true;
@@ -220,6 +233,16 @@ export default defineComponent({
       return message.error("Были допушены ошибки при заполнении");
     }
 
+    const resetPassword = async () => {
+      state.loading = true;
+      
+      const reset = await store.dispatch("fetchResetPassword", state.id);
+      if (reset?.success) message.success("Пароль для пользователя изменен");
+      else message.error(reset?.error || "Произошла ошибка");
+
+      state.loading = false;
+    }
+
     const customFormat = (value) => toLocaleDatePicter(value);
 
     const dateFormat = 'DD.MM.YYYY';
@@ -235,7 +258,8 @@ export default defineComponent({
       onFinishFailed,
       customFormat,
       state,
-      dateFormat
+      dateFormat,
+      resetPassword
     };
   },
 });

@@ -37,7 +37,10 @@
 
       <template v-else-if="column.key === 'progress'">
         <span>
-          <a-progress :percent="precentStage(record)" :steps="progressSteps(record?.date_range, record?.devide_by)" />
+          <a-progress
+            :percent="precentStage(record)"
+            :steps="progressSteps(record?.date_range, record?.devide_by)"
+          />
         </span>
       </template>
 
@@ -60,6 +63,7 @@
     </template>
   </a-table>
 </template>
+
 <script>
 import { defineComponent } from 'vue';
 import { message } from 'ant-design-vue';
@@ -107,7 +111,8 @@ const columns = [
 	{
 		title: 'Действие',
 		key: 'action',
-}];
+  }
+];
 
 export default defineComponent({
   components: {
@@ -136,7 +141,11 @@ export default defineComponent({
     const formatDateRange = (data) => {
       if (!data) return '';
       const splt = data.split("|");
-      return `C <strong>${splt[0]}</strong> по <strong>${splt[1]}</strong>`;
+      const is_delay = getDaysDiff(splt[1]) > 0;
+      
+      return `
+        C <strong>${splt[0]}</strong>
+        по <strong style='${is_delay ? "color: red;" : ""}'>${is_delay ? splt[1] + ' (Просрочено)' : splt[1]}</strong>`;
     }
 
     const progressSteps = (date_range, devide_by) => {
