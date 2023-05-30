@@ -48,6 +48,16 @@ export default {
 
 			return res;
 		},
+		async getNotConfirmedOrders(ctx, { page = 1, limit = 25 }) {
+			const res = await Req(`order/get_not_confirmed/${page}/${limit}`, {
+				method: 'GET'
+			});
+
+			if (res.success && res.data)
+				ctx.commit("get_all_orders", res.data);
+
+			return res;
+		},
 		async getOneOrder(ctx, order_id) {
 			const res = await Req(`order/get_one/${order_id}`, {
 				method: 'GET'

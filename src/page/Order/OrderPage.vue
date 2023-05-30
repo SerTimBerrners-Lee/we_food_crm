@@ -103,11 +103,6 @@ const columns = [
 		key: 'progress',
 		dataIndex: 'progress',
 	},
-  {
-		title: 'Описание',
-		key: 'description',
-		dataIndex: 'description',
-	},
 	{
 		title: 'Действие',
 		key: 'action',

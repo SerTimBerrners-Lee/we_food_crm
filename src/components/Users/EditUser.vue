@@ -127,7 +127,7 @@ export default defineComponent({
     LoaderSpin
   },
   computed: mapGetters(['authUser']),
-  setup(props) {
+  setup(props, { emit }) {
     const store = useStore();
 
     const state = reactive({
@@ -210,9 +210,13 @@ export default defineComponent({
       const result = await store.dispatch('updateUser', formaingData);
       state.loading = false;
       
-      if (result.success)
+      if (result.success) {
         message.success("Пользователь успешно добавлен");
-      else {
+        emit('unmount', {
+          id: state.id,
+          status: form.status
+        });
+      } else {
         const msg = result?.error || "Произошла ошибка при добавлении пользователя";
         message.error(msg);
       }

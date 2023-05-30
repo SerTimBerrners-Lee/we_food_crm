@@ -73,7 +73,7 @@
         <a-col :span="12">
           <a-form-item label="Пользователь" name="user_id">
             <modal-base-users @user-selected="onUserSelected" />
-            <h3 v-if="form?.user">Выбранный пользователь: <a> {{ form.user?.name + ' ' + form.user?.surname }} </a></h3>
+            <h3 v-if="form?.user">Выбранный пользователь: <a> {{ (form.user?.name || '...') + ' ' + (form.user?.surname || '...') }} </a></h3>
           </a-form-item>
         </a-col>
       </a-row>
@@ -83,6 +83,14 @@
           <a-form-item label="Продуктовая линейка" name="product_line_id">
             <modal-base-pl @pl-selected="onPlSelected" />
             <h3 v-if="form?.product_line">Продуктовая линейка: <a> {{ form.product_line?.line_name }} </a></h3>
+          </a-form-item>
+        </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="Кол-во блюд в день" name="dishes_kolvo">
+            <a-select v-model:value="form.dishes_kolvo" placeholder="Выберите роль">
+              <a-select-option v-for="item of state.dishes_pl" :key="item" :item="item" :value="item">{{ item }}</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -141,13 +149,13 @@ export default defineComponent({
     order_id: String,
     title: String
   },
-  setup(props) {
+  setup(props, { emit }) {
    
     const store = useStore();
 
     const state = reactive({
       loading: false,
-      id: null
+      dishes_pl: [],
     });
 
     const form = reactive({
@@ -159,6 +167,7 @@ export default defineComponent({
       user: null,
       product_line: null,
       devide_by: 2,
+      dishes_kolvo: 0,
 
       description: '',
     });
@@ -182,6 +191,10 @@ export default defineComponent({
       user: [{
         required: true,
         message: 'Выберите пользователя',
+      }],
+      dishes_kolvo: [{
+        required: true,
+        message: 'Выберите кол-во блюд',
       }],
       devide_by: [{
         required: false,
@@ -207,6 +220,7 @@ export default defineComponent({
       form.payment_state = data.payment_state;
       form.processing = data.processing;
       form.devide_by = data.devide_by;
+      form.dishes_kolvo = data.dishes_kolvo;
 
       if (data.date_range) {
         const splt = data.date_range.split('|');
@@ -214,7 +228,15 @@ export default defineComponent({
       }
 
       if (data?.user) form.user = data.user;
-      if (data?.product_line) form.product_line = data.product_line;
+      if (data?.product_line) {
+        form.product_line = data.product_line;
+        // Полуаем кол-во блюд
+        const { count_dishes_max, count_dishes_min } = form.product_line;
+        if (count_dishes_max <= count_dishes_min) state.dishes_pl = [count_dishes_min];
+        else
+          state.dishes_pl = [...Array((count_dishes_max+1)-count_dishes_min)].map((_, inx) => count_dishes_min+inx);
+        console.log(data);
+      }
 
       visible.value = true;
     };
@@ -226,10 +248,16 @@ export default defineComponent({
       const result = await store.dispatch('updateOrder', formaingData);
       state.loading = false;
       
-      if (result.success)
-        message.success("Успешно добавлено добавлен");
+      if (result.success) {
+        message.success("Успешно обновлено");
+        console.log(state)
+        emit('unmount', {
+          id: props.order_id,
+          processing: form.processing
+        });
+      }
       else {
-        const msg = result?.error || "Произошла ошибка при добавлении";
+        const msg = result?.error || "Произошла ошибка при обновлении";
         message.error(msg);
       }
 

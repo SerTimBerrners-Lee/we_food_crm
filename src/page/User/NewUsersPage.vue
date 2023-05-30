@@ -41,7 +41,7 @@
 
       <template v-else-if="column.key === 'action'">
         <span>
-          <edit-user :user_id="record.id" />
+          <edit-user :user_id="record.id" @unmount="unmount_edit_user" />
           <a-divider type="vertical" />
 
           <a>Заказы</a>
@@ -124,9 +124,16 @@ export default defineComponent({
       message.error(result?.error || "Не удалось удалить пользователя");
     };
 
+    const unmount_edit_user = (user) => {
+      if (!user) return false;
+
+      const { id, status } = user;
+      if (status == 'confirmed') store.commit("delete_user", id);
+    }
+
     return {
       columns,
-
+      unmount_edit_user,
 			confirm,
     };
   },

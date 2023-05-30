@@ -86,11 +86,6 @@ const columns = [
 		key: 'progress',
 		dataIndex: 'progress',
 	},
-  {
-		title: 'Описание',
-		key: 'description',
-		dataIndex: 'description',
-	},
 ];
 
 export default defineComponent({

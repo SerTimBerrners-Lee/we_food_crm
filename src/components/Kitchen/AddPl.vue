@@ -66,13 +66,15 @@
         </a-col>
       </a-row>
 
-      <a-row :gutter="16">
-				<i>*Скидка вносится форматом день/день/%скидки: Например 3/5/1 = c 3 по 5 день скидка = 1%</i>
-				<i>*Чтобы выбрать любое число можно написать так: 30/0/11. Эта запись будет означать от 30 и до любого числа</i>
-        <a-col :span="4">
+      <a-row>
+				<i>*Скидка вносится форматом с_дня/по_день/стоимость_за_блюдо: Например 3/5/750 = c 3 по 5 день стоимость 750</i>
+				<i>*Чтобы выбрать любое число можно написать так: 30/0/750. Эта запись будет означать от 30 и до любого числа</i>
+        <a-col :span="24">
           <a-form-item label="Скидки">
-						<div v-for="(item, index) of state.precent_range_discont || []" :key="index">
-							#{{ index+1 }}<input :value="item || 'etet'" :placeholder='`3/5/1`' @input="e => formatMask(e, index)" />
+						<div v-for="(item, index) of state.precent_range_discont || []" :key="index" class="discount_item">
+							#{{ index+1 }}
+              <input :value="item.discount" :placeholder='`3/5/1`' @input="e => formatMask(e, index)" />
+              <input v-model="item.description" placeholder="Текст отображаемый у пользователя"/>
 						</div>
           </a-form-item>
         </a-col>
@@ -184,11 +186,9 @@ export default defineComponent({
 
 		const formatMask = (e, inx) => {
 			const val = e.target?.value;
-			let value = val.replace(/[^0-9/]/g, '');
-			const parts = value.split('/');
-			value = parts.join('/');
+			const value = val;
 
-			state.precent_range_discont[inx] = value;
+			state.precent_range_discont[inx].discount = value;
 
 			if (!val) {
 				state.precent_range_discont = state.precent_range_discont.filter((el, index) => 
@@ -197,9 +197,8 @@ export default defineComponent({
 			}
 		}
 
-		const addDiscont = () => {
-			state.precent_range_discont.push('0/0/0');
-		}
+		const addDiscont = () => state.precent_range_discont.push({discount: '0/0/0', description: '' });
+
 
     return {
       form,

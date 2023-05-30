@@ -74,7 +74,7 @@
         <a-col :span="12">
           <a-form-item label="Пользователь" name="user_id">
             <modal-base-users @user-selected="onUserSelected" />
-            <h3 v-if="form?.user">Выбранный пользователь: <a> {{ form.user?.name + ' ' + form.user?.surname }} </a></h3>
+            <h3 v-if="form?.user">Выбранный пользователь: <a> {{ (form.user?.name || '...') + ' ' + (form.user?.surname || '...') }} </a></h3>
           </a-form-item>
         </a-col>
       </a-row>
@@ -84,6 +84,14 @@
           <a-form-item label="Продуктовая линейка" name="product_line_id">
             <modal-base-pl @pl-selected="onPlSelected" />
             <h3 v-if="form?.product_line">Продуктовая линейка: <a> {{ form.product_line?.line_name }} </a></h3>
+          </a-form-item>
+        </a-col>
+
+        <a-col :span="12">
+          <a-form-item label="Кол-во блюд в день" name="dishes_kolvo">
+            <a-select v-model:value="form.dishes_kolvo" placeholder="Выберите роль">
+              <a-select-option v-for="item of state.dishes_pl" :key="item" :item="item" :value="item">{{ item }}</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -146,17 +154,19 @@ export default defineComponent({
 
     const state = reactive({
       loading: false,
+      dishes_pl: []
     });
 
     const form = reactive({
       date_range: null,
       address: '',
-      payment_state: 'Не оплачено',
+      payment_state: 'not_paid',
       payment_method: '',
-      processing: 'Не подтверждено',
+      processing: 'not_confirmed',
       user: null,
       product_line: null,
       devide_by: 2,
+      dishes_kolvo: 0,
 
       description: '',
     });
@@ -181,6 +191,10 @@ export default defineComponent({
         required: true,
         message: 'Выберите пользователя',
       }],
+      dishes_kolvo: [{
+        required: true,
+        message: 'Выберите кол-во блюд',
+      }],
       devide_by: [{
         required: false,
       }],
@@ -202,7 +216,7 @@ export default defineComponent({
       state.loading = false;
       
       if (result.success)
-        message.success("Успешно добавлено добавлен");
+        message.success("Успешно обновлено добавлен");
       else {
         const msg = result?.error || "Произошла ошибка при добавлении";
         message.error(msg);
@@ -242,8 +256,14 @@ export default defineComponent({
     }
 
     const onPlSelected = (selectedPl) => {
-      console.log(selectedPl)
-      if (selectedPl) form.product_line = selectedPl;
+      if (!selectedPl) return false;
+      form.product_line = selectedPl;
+      
+      const { count_dishes_max, count_dishes_min } = form.product_line;
+      if (count_dishes_max <= count_dishes_min) state.dishes_pl = [count_dishes_min];
+      else
+        state.dishes_pl = [...Array((count_dishes_max+1)-count_dishes_min)].map((_, inx) => count_dishes_min+inx);
+
     }
 
     const dateFormat = 'DD.MM.YYYY';
