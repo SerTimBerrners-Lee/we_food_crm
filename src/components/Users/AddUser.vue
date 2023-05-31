@@ -111,8 +111,6 @@
   </a-drawer>
 </template>
 <script>
-
-import moment from 'moment';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import LoaderSpin from '@/components/LoaderSpin';
@@ -207,8 +205,7 @@ export default defineComponent({
 
       onSave(data);
     }
-    const onFinishFailed = ({ errorFields }) => {
-      console.log("errorFields: ", errorFields);
+    const onFinishFailed = () => {
       return message.error("Были допушены ошибки при заполнении");
     }
 
@@ -230,7 +227,6 @@ export default defineComponent({
       customFormat,
       state,
       dateFormat,
-      moment,
     };
   },
 });

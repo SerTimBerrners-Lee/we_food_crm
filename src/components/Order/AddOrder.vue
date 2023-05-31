@@ -70,6 +70,18 @@
 
       </a-row>
 
+      <a-row :gutter="16">
+
+        <a-col :span="12">
+          <a-form-item label="Время" name="time">
+            <a-select v-model:value="form.time" placeholder="Выберите роль">
+              <a-select-option v-for="time of state.times" :key="time" :value="time">{{ time }}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
+      </a-row>
+
       <a-row :gutter="16" style="margin-top: 10px; margin-bottom: 10px;">
         <a-col :span="12">
           <a-form-item label="Пользователь" name="user_id">
@@ -130,8 +142,6 @@
   </a-drawer>
 </template>
 <script>
-
-import moment from 'moment';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import LoaderSpin from '@/components/LoaderSpin';
@@ -154,7 +164,20 @@ export default defineComponent({
 
     const state = reactive({
       loading: false,
-      dishes_pl: []
+      dishes_pl: [],
+      times: [
+        '07:00',
+        '07:30',
+        '08:00',
+        '08:30',
+        '09:00',
+        '09:30',
+        '10:00',
+        '10:30',
+        '11:00',
+        '11:30',
+        '12:00',
+      ]
     });
 
     const form = reactive({
@@ -167,6 +190,7 @@ export default defineComponent({
       product_line: null,
       devide_by: 2,
       dishes_kolvo: 0,
+      time: '07:00',
 
       description: '',
     });
@@ -232,7 +256,6 @@ export default defineComponent({
         date_range = dat1+'|'+dat2;
       }
 
-      console.log("finish: ", finish)
       const data = JSON.stringify({
         ...finish,
         date_range: date_range,
@@ -242,8 +265,7 @@ export default defineComponent({
 
       onSave(data);
     }
-    const onFinishFailed = ({ errorFields }) => {
-      console.log("errorFields: ", errorFields);
+    const onFinishFailed = () => {
       return message.error("Были допушены ошибки при заполнении");
     }
 
@@ -280,7 +302,6 @@ export default defineComponent({
       customFormat,
       state,
       dateFormat,
-      moment,
       onUserSelected,
       onPlSelected
     };

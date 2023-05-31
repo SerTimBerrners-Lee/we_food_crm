@@ -44,7 +44,7 @@
           <edit-user :user_id="record.id" @unmount="unmount_edit_user" />
           <a-divider type="vertical" />
 
-          <a>Заказы</a>
+          <user-order :user_id="record.id" />
           <a-divider type="vertical" />
           
 					<a-popconfirm
@@ -67,6 +67,7 @@ import { message } from 'ant-design-vue';
 import { mapGetters, useStore } from 'vuex';
 import AddUser from '@/components/Users/AddUser';
 import EditUser from '@/components/Users/EditUser';
+import UserOrder from '@/components/Order/UserOrder';
 
 const columns = [
 	{
@@ -104,7 +105,8 @@ const columns = [
 export default defineComponent({
   components: {
     AddUser,
-    EditUser
+    EditUser,
+    UserOrder
   },
   computed: mapGetters(['getUsers']),
   setup() {

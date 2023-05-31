@@ -105,7 +105,6 @@ export default defineComponent({
     };
 
 		const returnUser = (user) => {
-			console.log("returnUser")
 			emit('user-selected', user);
 			onClose();
 		}

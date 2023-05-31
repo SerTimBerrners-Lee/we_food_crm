@@ -2,12 +2,16 @@ import Req from "@/js/reg";
 
 export default {
 	state: {
-		orders: []
+		orders: [],
+		orders_user: []
 	},
 	getters: {
 		getOrders(state) {
 			return state.orders;
 		},
+		getOrdersUser(state) {
+			return state.orders_user;
+		}
 	},
 	actions: {
 		async createOrder(ctx, data) {
@@ -84,7 +88,17 @@ export default {
 				ctx.commit("delete_order", order_id);
 
 			return res;
-		}
+		},
+		async fetchMyOrders(ctx, user_id) {
+			const res = await Req(`order/get_my_orders/${user_id}`, {
+				method: 'GET'
+			});
+
+			if (res.success && res.data)
+				ctx.commit("get_orders_user", res.data);
+
+			return res;
+		},
 	},
 	mutations: {
 		get_all_orders(state, orders) {
@@ -92,15 +106,30 @@ export default {
 		},
 		add_order(state, order) {
 			state.orders.push(order);
+
+			if (state.orders_user.length)
+				state.orders_user.push(order);
 		},
 		update_order(state, update_order) {
 			state.orders = state.orders.map(el => {
 				if (el.id === update_order.id) return update_order;
 				return el;
-			})
+			});
+
+			if (state.orders_user.length) {
+				state.orders_user = state.orders_user.map(el => {
+					if (el.id === update_order.id) return update_order;
+					return el;
+				});
+			}
 		},
 		delete_order(state, order_id) {
 			state.orders = state.orders.filter(el => el.id != order_id);
+			if (state.orders_user.length)
+				state.orders_user = state.orders_user.filter(el => el.id != order_id);
 		},
+		get_orders_user(state, orders) {
+			state.orders_user = orders;
+		}
 	}
 }

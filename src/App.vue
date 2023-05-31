@@ -2,6 +2,7 @@
   <authorized-page v-if="!isAuth" />
   <a-layout v-else>
     <a-layout-sider
+      id="left-menu-custom"
       breakpoint="lg"
       collapsed-width="0"
       @collapse="onCollapse"
@@ -96,7 +97,7 @@
         </a-button>
       </a-layout-header>
 
-      <a-layout-content :style="{ margin: '24px 16px 0' }">
+      <a-layout-content :style="{ margin: '24px 16px 0' }" id="main-content-custom">
         <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
           <router-view />
         </div>
@@ -167,6 +168,15 @@ export default {
   font-weight: bold;
   text-align: center;
   padding: 20px;
+}
+
+#left-menu-custom {
+  position: fixed !important;
+  height: 100vh;
+}
+
+#main-content-custom {
+  margin-left: 200px !important;
 }
 
 #components-layout-demo-responsive .logo {

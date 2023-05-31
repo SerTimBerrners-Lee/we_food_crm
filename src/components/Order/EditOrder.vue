@@ -69,6 +69,18 @@
 
       </a-row>
 
+      <a-row :gutter="16">
+
+        <a-col :span="12">
+          <a-form-item label="Время" name="time">
+            <a-select v-model:value="form.time" placeholder="Выберите роль">
+              <a-select-option v-for="time of state.times" :key="time" :value="time">{{ time }}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
+      </a-row>
+
       <a-row :gutter="16" style="margin-top: 10px; margin-bottom: 10px;">
         <a-col :span="12">
           <a-form-item label="Пользователь" name="user_id">
@@ -130,7 +142,7 @@
 </template>
 <script>
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import ModalBasePl from '../Kitchen/ModalBasePl';
@@ -156,6 +168,19 @@ export default defineComponent({
     const state = reactive({
       loading: false,
       dishes_pl: [],
+      times: [
+        '07:00',
+        '07:30',
+        '08:00',
+        '08:30',
+        '09:00',
+        '09:30',
+        '10:00',
+        '10:30',
+        '11:00',
+        '11:30',
+        '12:00',
+      ]
     });
 
     const form = reactive({
@@ -168,6 +193,7 @@ export default defineComponent({
       product_line: null,
       devide_by: 2,
       dishes_kolvo: 0,
+      time: '07:00',
 
       description: '',
     });
@@ -220,11 +246,12 @@ export default defineComponent({
       form.payment_state = data.payment_state;
       form.processing = data.processing;
       form.devide_by = data.devide_by;
+      form.time = data.time;
       form.dishes_kolvo = data.dishes_kolvo;
 
       if (data.date_range) {
         const splt = data.date_range.split('|');
-        form.date_range = ref([moment(splt[0], dateFormat), moment(splt[1], dateFormat)]);
+        form.date_range = ref([dayjs(splt[0], dateFormat), dayjs(splt[1], dateFormat)]);
       }
 
       if (data?.user) form.user = data.user;
@@ -235,7 +262,6 @@ export default defineComponent({
         if (count_dishes_max <= count_dishes_min) state.dishes_pl = [count_dishes_min];
         else
           state.dishes_pl = [...Array((count_dishes_max+1)-count_dishes_min)].map((_, inx) => count_dishes_min+inx);
-        console.log(data);
       }
 
       visible.value = true;
@@ -250,13 +276,11 @@ export default defineComponent({
       
       if (result.success) {
         message.success("Успешно обновлено");
-        console.log(state)
         emit('unmount', {
           id: props.order_id,
           processing: form.processing
         });
-      }
-      else {
+      } else {
         const msg = result?.error || "Произошла ошибка при обновлении";
         message.error(msg);
       }
@@ -281,8 +305,7 @@ export default defineComponent({
 
       onSave(data);
     }
-    const onFinishFailed = ({ errorFields }) => {
-      console.log("errorFields: ", errorFields);
+    const onFinishFailed = () => {
       return message.error("Были допушены ошибки при заполнении");
     }
 
@@ -293,7 +316,6 @@ export default defineComponent({
     }
 
     const onPlSelected = (selectedPl) => {
-      console.log(selectedPl)
       if (selectedPl) form.product_line = selectedPl;
     }
 
@@ -311,7 +333,6 @@ export default defineComponent({
       customFormat,
       state,
       dateFormat,
-      moment,
       onUserSelected,
       onPlSelected
     };

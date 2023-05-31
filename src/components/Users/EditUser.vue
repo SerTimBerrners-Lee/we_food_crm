@@ -95,8 +95,20 @@
             />
           </a-form-item>
         </a-col>
-        <a style="color: red; margin: 10px;" v-if="authUser && authUser?.role === 'Администратор'" @click="resetPassword">Сбросить пароль</a>
       </a-row>
+
+      <p> 
+        <user-order :user_id="user_id" />
+        <a-popconfirm
+						title="Вы точно хотите сбросить пароль?"
+						ok-text="Да"
+						cancel-text="Нет"
+						@confirm="confirm()"
+            v-if="authUser && authUser?.role === 'Администратор'"
+					>
+						<a href="#" style="color: red">Сбросить пароль</a>
+					</a-popconfirm>
+      </p>
 
      <a-form-item>
        <a-space>
@@ -110,11 +122,11 @@
   </a-drawer>
 </template>
 <script>
-
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { message } from 'ant-design-vue';
 import { useStore, mapGetters } from 'vuex';
 import LoaderSpin from '@/components/LoaderSpin';
+import UserOrder from '@/components/Order/UserOrder';
 import { defineComponent, reactive, ref } from 'vue';
 import { toLocaleDatePicter } from '@/js/date.methods';
 
@@ -124,7 +136,8 @@ export default defineComponent({
     title: String,
   },
   components: {
-    LoaderSpin
+    LoaderSpin,
+    UserOrder
   },
   computed: mapGetters(['authUser']),
   setup(props, { emit }) {
@@ -195,7 +208,7 @@ export default defineComponent({
       form.role = data.role;
       form.address = data.address;
       form.phone = data.phone;
-      form.birthday = ref(moment(data.birthday, dateFormat));
+      form.birthday = ref(dayjs(data.birthday, dateFormat));
       form.description = data.description;
       form.email = data.email;
       form.status = data.status;
@@ -247,6 +260,10 @@ export default defineComponent({
       state.loading = false;
     }
 
+    const confirm = async () => {
+      resetPassword();
+    };
+
     const customFormat = (value) => toLocaleDatePicter(value);
 
     const dateFormat = 'DD.MM.YYYY';
@@ -263,7 +280,7 @@ export default defineComponent({
       customFormat,
       state,
       dateFormat,
-      resetPassword
+      confirm
     };
   },
 });

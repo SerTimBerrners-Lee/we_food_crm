@@ -35,7 +35,7 @@
 
       <template v-else-if="column.key === 'action'">
         <span>
-          <a>Заказы 一 {{ record.name }}</a>
+          <user-order :user_id="record.id" />
           <a-divider type="vertical" />
 					<a-popconfirm
 						title="Вы точно хотите вернуть пользователя?"
@@ -55,7 +55,8 @@
 import { defineComponent } from 'vue';
 import { message } from 'ant-design-vue';
 import { mapGetters, useStore } from 'vuex';
-import AddUser from '@/components/Users/AddUser.vue';
+import AddUser from '@/components/Users/AddUser';
+import UserOrder from '@/components/Order/UserOrder';
 
 const columns = [
 	{
@@ -92,7 +93,8 @@ const columns = [
 
 export default defineComponent({
   components: {
-    AddUser
+    AddUser,
+    UserOrder
   },
   computed: mapGetters(['getUsers']),
   setup() {

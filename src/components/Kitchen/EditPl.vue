@@ -200,8 +200,7 @@ export default defineComponent({
 
       onSave(data); 
     }
-    const onFinishFailed = ({ errorFields }) => {
-      console.log("errorFields: ", errorFields);
+    const onFinishFailed = () => {
       return message.error("Были допушены ошибки при заполнении");
     }
 

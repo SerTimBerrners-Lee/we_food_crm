@@ -1,7 +1,19 @@
 <template>
-	<add-order />
+	<a type="primary" @click="showDrawer">
+		Заказы
+  </a>
 
-  <a-table :columns="columns" :data-source="getOrders" @change="onChange">
+	<a-drawer
+    title="Заказы для пользователя"
+    :width="1000"
+    :visible="visible"
+    :body-style="{ paddingBottom: '80px' }"
+    :footer-style="{ textAlign: 'right' }"
+    @close="onClose"
+  >
+		<add-order />
+
+		<a-table :columns="columns" :data-source="getOrdersUser" @change="onChange">
 		
     <template #headerCell="{ column }">
 			<template v-if="column.key === 'id'">
@@ -23,18 +35,6 @@
         </span>
       </template>
 
-      <template v-else-if="column.key === 'product_line_id'">
-        <span>
-          <a-tag color="green">{{ record?.product_line?.line_name }}</a-tag>
-        </span>
-      </template>
-
-      <template v-else-if="column.key === 'user_id' && record?.user">
-        <span>
-          <edit-user :user_id="record?.user_id" :title="record?.user?.name" />
-        </span>
-      </template>
-
       <template v-else-if="column.key === 'progress'">
         <span>
           <a-progress
@@ -44,17 +44,41 @@
         </span>
       </template>
 
+			<template v-else-if="column.key === 'processing'">
+				<a-tag v-if="record.processing == 'not_confirmed'" color="red">Не подтвержден</a-tag>
+				<a-tag v-else color="green">Подтвержден</a-tag>
+      </template>
+
+      <template v-else-if="column.key === 'action'">
+        <span>
+          <edit-order :order_id="record.id" />
+          <a-divider type="vertical" />
+          
+					<a-popconfirm
+						title="Вы точно хотите удалить Заказ?"
+						ok-text="Да"
+						cancel-text="Нет"
+						@confirm="confirm(record.id)"
+					>
+						<a href="#" style="color: red">Удалить</a>
+					</a-popconfirm>
+        </span>
+      </template>
+
     </template>
-  </a-table>
+	
+		</a-table>
+	
+	</a-drawer>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
 import { message } from 'ant-design-vue';
+import { defineComponent, ref } from 'vue';
 import { mapGetters, useStore } from 'vuex';
 import { getDaysDiff } from '@/js/date.methods';
-import EditUser from '@/components/Users/EditUser';
 import AddOrder from '@/components/Order/AddOrder';
+import EditOrder from '@/components/Order/EditOrder';
 
 const columns = [
 	{
@@ -72,35 +96,34 @@ const columns = [
 		key: 'address',
 	},
   {
-		title: 'Продуктовая линейка',
-		key: 'product_line_id',
-		dataIndex: 'product_line_id',
-	},
-  {
-		title: 'Пользователь',
-		key: 'user_id',
-		dataIndex: 'user_id',
-	},
-  {
 		title: 'Процесс выполнения',
 		key: 'progress',
 		dataIndex: 'progress',
 	},
+	{
+		title: 'Статус подтверждения',
+		key: 'processing',
+		dataIndex: 'processing',
+	},
+	{
+		title: 'Действие',
+		key: 'action',
+  }
 ];
 
 export default defineComponent({
+	props: {
+		user_id: Number
+	},
   components: {
     AddOrder,
-    EditUser
+    EditOrder,
   },
-  computed: mapGetters(['getOrders']),
-  setup() {
+  computed: mapGetters(['getOrdersUser']),
+  setup(props) {
     const store = useStore();
 
-    store.dispatch('getAllBannedOrder', { page: 1, limit: 25 }).then(res => {
-      if (!res.success)
-        message.error(res?.error || "Произошла ошибка при получении данных");
-    });
+		const visible = ref(false);
 
 		const confirm = async (order_id) => {
       if (!order_id) return message.warn("Не правильно переданы параметры для удаления");
@@ -145,12 +168,28 @@ export default defineComponent({
       return precent;
     }
 
+		const showDrawer = () => {
+			visible.value = true;
+
+			store.dispatch('fetchMyOrders', props.user_id).then(res => {
+      if (!res.success)
+        message.error(res?.error || "Произошла ошибка при получении данных");
+			});
+		}
+
+		const onClose = () => {
+			visible.value = false;
+		}
+
     return {
       columns,
       formatDateRange,
 			confirm,
       progressSteps,
-      precentStage
+      precentStage,
+			showDrawer,
+			onClose,
+			visible
     };
   },
 });
