@@ -7,6 +7,7 @@ import dishes from './modules/dishes';
 import stages from './modules/stages';
 import kitchen from './modules/kitchen';
 import bid from './modules/bid';
+import promo from './modules/promo';
 
 export default createStore({
 	modules: {
@@ -17,6 +18,7 @@ export default createStore({
 		dishes,
 		stages,
 		bid,
-		kitchen
+		kitchen,
+		promo
 	}
 });

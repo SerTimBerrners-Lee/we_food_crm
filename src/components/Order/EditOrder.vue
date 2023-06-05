@@ -79,6 +79,15 @@
           </a-form-item>
         </a-col>
 
+        <a-col :span="12">
+          <a-form-item label="Промокод" name="promo_id">
+            <a-select v-model:value="form.promo_id" placeholder="Выберите промокод">
+              <a-select-option v-for="promo of getPromo" :key="promo.id" :value="promo.id">{{ promo.name }}</a-select-option>
+              <a-select-option :key="236426384" :value="null">Без промокода</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
       </a-row>
 
       <a-row :gutter="16" style="margin-top: 10px; margin-bottom: 10px;">
@@ -143,8 +152,8 @@
 <script>
 
 import dayjs from 'dayjs';
-import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
+import { mapGetters, useStore } from 'vuex';
 import ModalBasePl from '../Kitchen/ModalBasePl';
 import LoaderSpin from '@/components/LoaderSpin';
 import { defineComponent, reactive, ref } from 'vue';
@@ -161,6 +170,7 @@ export default defineComponent({
     order_id: String,
     title: String
   },
+  computed: mapGetters(['getPromo']),
   setup(props, { emit }) {
    
     const store = useStore();
@@ -194,6 +204,7 @@ export default defineComponent({
       devide_by: 2,
       dishes_kolvo: 0,
       time: '07:00',
+      promo_id: null,
 
       description: '',
     });
@@ -239,6 +250,9 @@ export default defineComponent({
         return message.error(result.error || "Произошла ошибка");
       }
 
+      const promos = await store.dispatch('getAllPromo');
+      if (!promos.success) message.error(result.error || 'Не удалось получить промокоды');
+
       const { data } = result;
       form.address = data.address;
       form.description = data.description;
@@ -248,6 +262,7 @@ export default defineComponent({
       form.devide_by = data.devide_by;
       form.time = data.time;
       form.dishes_kolvo = data.dishes_kolvo;
+      form.promo_id = data.promo_id;
 
       if (data.date_range) {
         const splt = data.date_range.split('|');

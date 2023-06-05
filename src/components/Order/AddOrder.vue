@@ -80,6 +80,15 @@
           </a-form-item>
         </a-col>
 
+        <a-col :span="12">
+          <a-form-item label="Промокод" name="promo_id">
+            <a-select v-model:value="form.promo_id" placeholder="Выберите промокод">
+              <a-select-option v-for="promo of getPromo" :key="promo.id" :value="promo.id">{{ promo.name }}</a-select-option>
+              <a-select-option :key="236426384" :value="null">Без промокода</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+
       </a-row>
 
       <a-row :gutter="16" style="margin-top: 10px; margin-bottom: 10px;">
@@ -142,7 +151,7 @@
   </a-drawer>
 </template>
 <script>
-import { useStore } from 'vuex';
+import { mapGetters, useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import LoaderSpin from '@/components/LoaderSpin';
 import { PlusOutlined } from '@ant-design/icons-vue';
@@ -158,6 +167,7 @@ export default defineComponent({
     ModalBaseUsers,
     ModalBasePl
   },
+  computed: mapGetters(['getPromo']),
   setup() {
    
     const store = useStore();
@@ -191,6 +201,7 @@ export default defineComponent({
       devide_by: 2,
       dishes_kolvo: 0,
       time: '07:00',
+      promo_id: null,
 
       description: '',
     });
@@ -228,7 +239,10 @@ export default defineComponent({
       }],
     };
     const visible = ref(false);
-    const showDrawer = () => {
+    const showDrawer = async () => {
+     const result = await store.dispatch('getAllPromo');
+     if (!result.success) message.error(result.error || 'Не удалось получить промокоды');
+
       visible.value = true;
     };
     const onClose = () => {
