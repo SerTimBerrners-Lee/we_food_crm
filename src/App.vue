@@ -21,6 +21,12 @@
           <span class="nav-text" @click="$router.push('/bids')">Заявки</span>
         </a-menu-item>
 
+        <a-menu-item key="22">
+          <AppstoreAddOutlined />
+          <span class="nav-text" @click="$router.push('/promo')">Промокоды</span>
+        </a-menu-item>
+
+
         <a-sub-menu key="sub1">
           <template #icon>
             <user-outlined />
@@ -108,7 +114,7 @@
 </template>
 
 <script>
-import { FundOutlined, ShoppingOutlined, LoginOutlined, UserOutlined, DeliveredProcedureOutlined, PhoneOutlined, TableOutlined } from '@ant-design/icons-vue';
+import { FundOutlined, ShoppingOutlined, LoginOutlined, UserOutlined, DeliveredProcedureOutlined, PhoneOutlined, TableOutlined, AppstoreAddOutlined } from '@ant-design/icons-vue';
 import AuthorizedPage from '@/page/AuthorizedPage.vue';
 import { mapGetters, mapMutations } from 'vuex';
 import '@/assets/main.css';
@@ -122,7 +128,8 @@ export default {
     UserOutlined,
     DeliveredProcedureOutlined,
     PhoneOutlined,
-    TableOutlined
+    TableOutlined,
+    AppstoreAddOutlined
   },
   data () {
     return {

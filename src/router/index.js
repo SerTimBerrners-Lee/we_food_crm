@@ -11,6 +11,7 @@ import DishesPage from '@/page/Kitchen/Dishes/DishesPage';
 import KitchenPage from '@/page/Kitchen/KitchenPage';
 import DeliveryPage from '@/page/Delivery/DeliveryPage';
 import BidsPage from '@/page/Bids/BidsPage';
+import PromoPage from '@/page/Promo/PromoPage';
 
 const routes = [
 	{
@@ -76,6 +77,11 @@ const routes = [
 		path: '/bids',
 		name: 'Заявки',
 		component: BidsPage
+	},
+	{
+		path: '/promo',
+		name: 'Промокоды',
+		component: PromoPage
 	}
 ];
 

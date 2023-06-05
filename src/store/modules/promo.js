@@ -24,6 +24,20 @@ export default {
 				
 			return res;
 		},
+		async updatePromo(ctx, data) {
+			const res = await Req('promo/update', {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				body: data
+			});
+
+			if (res.success && res.data) 
+				ctx.commit("update_promo", res.data);
+				
+			return res;
+		},
 		async getAllPromo(ctx) {
 			const res = await Req(`promo/get_all/`, {
 				method: 'GET'
@@ -42,5 +56,9 @@ export default {
 		add_promo(state, promo) {
 			state.promo.push(promo);
 		},
+		update_promo(state, promo) {
+			state.promo = state.promo.filter(el => el !== promo.id);
+			state.promo.push(promo);
+		}
 	}
 }
